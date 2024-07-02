@@ -11,6 +11,7 @@ When(/^Search with (.*)$/, async function (searchItem) {
   let ele = await $(`[name=q]`);
   await ele.setValue(searchItem);
   await browser.keys("Enter");
+  console.log("hi")
 });
 
 Then(/^Click on the first search result$/, async function () {
