@@ -4,6 +4,8 @@ import { expect } from "chai";
 Given(/^Google$/, function () {
   browser.url("https://www.google.com");
   browser.pause(7000);
+  console.log("after opening browser....");
+  console.log(`>>>>>> browser Obj ${JSON.stringify(browser)}`);
 });
 
 When(/^Search with (.*)$/, async function (searchItem) {
@@ -11,7 +13,9 @@ When(/^Search with (.*)$/, async function (searchItem) {
   let ele = await $(`[name=q]`);
   await ele.setValue(searchItem);
   await browser.keys("Enter");
-  console.log("hi")
+
+  console.log(`>>>> Ele Obj ${JSON.stringify(ele)}`);
+
 });
 
 Then(/^Click on the first search result$/, async function () {
@@ -21,6 +25,15 @@ Then(/^Click on the first search result$/, async function () {
 
 Then(/^URL should match (.*)$/, async function (exceptedURL) {
   console.log(`>>> exceptedURl ${exceptedURL}`);
+  //Dynamic wait
+
+  await browser.waitUntil(async () => {
+    return (
+      await browser.getTitle() ===
+      "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js | WebdriverIO"
+    );
+  },{timeout:6000,interval:2000,timeoutMsg:"Title not Found"});
+
   //chai is an BDD/TDD assertion library
   let url = await browser.getUrl();
   expect(url).to.equal(exceptedURL);
@@ -31,13 +44,16 @@ Then(/^URL should match (.*)$/, async function (exceptedURL) {
  */
 
 Given(/^A webpage is opened$/, async function () {
-  await browser.url("");
+  await browser.url(
+    "https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo"
+  );
   await browser.setTimeout({ implicit: 15000, pageLoad: 10000 });
   await browser.maximizeWindow();
 });
 
 When(/^Perform webInteractions$/, async function () {
-  /**
+  /*
+   * Base Url: https://the-internet.herokuapp.com
    * 1.Input Box
    * Actions:
    * 1.Type into Input Box
@@ -221,6 +237,7 @@ When(/^Perform webInteractions$/, async function () {
 
   // await $(`//a[contains(text(),"iFrame")]`).click();
   // let ele = await $(`#mce_0_ifr`);
+  // console.log(`>>>>>>>>>> ele Obj ${JSON.stringify(ele)}`)
   // await browser.switchToFrame(ele);
   // // we can interact with the frame
   // await $(`#tinymce`).setValue("Hello Frames.........")
@@ -234,7 +251,180 @@ When(/^Perform webInteractions$/, async function () {
    * 1. scrollIntoView
    */
 
-  await $(`span=Ways to save and get value on Amazon`).scrollIntoView()
-  
+  //await $(`span=Ways to save and get value on Amazon`).scrollIntoView()
+
+  /**
+   * Web Tables
+   * 1. Check no of rows and columns
+   * 2. Get whole table data
+   * 3. Get single row[based on condition]
+   * 4. Get single column
+   * 5. Get Single cell value[based on another cell]
+   */
+
+  /** 1. Check no of rows and columns */
+  // let rowCount = await $$(`//table[@id="table1"]/tbody/tr`).length;
+  // expect(rowCount).to.equal(4);
+  // console.log(`>>>> number of rows ${rowCount}`);
+
+  // let colCount = await $$(`//table[@id="table1"]/thead/tr/th`).length;
+  // expect(colCount).to.equal(6);
+  // console.log(`>>>> number of col ${colCount}`);
+
+  /** 2. Get whole table data */
+  // //table[@id="table1"]/tbody/tr/td
+  // let tableArray = []
+  // for(let i=0;i<rowCount;i++){
+  //   //let rowArray = [];
+  //   let personObj ={
+  //     Lastname : "",
+  //     firstname :"",
+  //     email :"",
+  //     Due:"",
+  //     web:"",
+  //     edit:""
+  //   }
+  //   for(let j=0;j<colCount;j++){
+  //     let cellVal = await $(`//table[@id="table1"]/tbody/tr[${i+1}]/td[${j+1}]`).getText();
+  //     //rowArray.push(cellVal);
+  //     //console.log(`>>>>>>>>> Cell Value ,${cellVal}`);
+  //     if(j===0) personObj.Lastname = cellVal
+  //     if(j===1) personObj.firstname = cellVal
+  //     if(j===2) personObj.email = cellVal
+  //     if(j===3) personObj.Due = cellVal
+  //     if(j===4) personObj.web = cellVal
+  //     if(j===5) personObj.edit = cellVal
+  //   }
+  //   //tableArray.push(rowArray);
+  //   tableArray.push(personObj);
+  // }
+  // console.log(JSON.stringify(tableArray))
+
+  /** 3. Get single row[based on condition] */
+
+  // let tableArray = [];
+  // for (let i = 0; i < rowCount; i++) {
+  //   let personObj = {
+  //     Lastname: "",
+  //     firstname: "",
+  //     email: "",
+  //     Due: "",
+  //     web: "",
+  //     edit: "",
+  //   };
+  //   for (let j = 0; j < colCount; j++) {
+  //     let cellVal = await $(
+  //       `//table[@id="table1"]/tbody/tr[${i + 1}]/td[${j + 1}]`
+  //     ).getText();
+  //     let first_Name = await $(
+  //       `//table[@id="table1"]/tbody/tr[${i + 1}]/td[2]`
+  //     ).getText();
+  //     //console.log(`>>>>>>>>> Cell Value ,${cellVal}`);
+  //     if (first_Name === "Jason") {
+  //       if (j === 0) personObj.Lastname = cellVal;
+  //       if (j === 1) personObj.firstname = cellVal;
+  //       if (j === 2) personObj.email = cellVal;
+  //       if (j === 3) personObj.Due = cellVal;
+  //       if (j === 4) personObj.web = cellVal;
+  //       if (j === 5) personObj.edit = cellVal;
+  //     }
+  //   }
+  //   if(personObj.firstname){
+  //     tableArray.push(personObj);
+  //   }
+  // }
+  // console.log(JSON.stringify(tableArray));
+
+  /** 4. Get single column */
+
+  // let col =[];
+  // for(let i=0;i<rowCount;i++){
+  //   let cellVal = await $(`//table[@id="table1"]/tbody/tr[${i + 1}]/td[4]`).getText();
+  //   col.push(cellVal);
+  // }
+
+  // console.log(`>>>>>>> col : ${col}`)
+
+  /** 5. Get Single cell value[based on another cell] */
+
+  // let tableArray = [];
+  // for (let i = 0; i < rowCount; i++) {
+  //     // let cellVal = await $(
+  //     //   `//table[@id="table1"]/tbody/tr[${i + 1}]/td[${j + 1}]`
+  //     // ).getText();
+  //     let price = await $(
+  //       `//table[@id="table1"]/tbody/tr[${i + 1}]/td[4]`
+  //     ).getText();
+  //     let first_Name = await $(
+  //         `//table[@id="table1"]/tbody/tr[${i + 1}]/td[2]`
+  //     ).getText();
+  //     let numPrice = +(price.slice(1,price.length));
+  //     if(numPrice> 50){
+  //       tableArray.push(first_Name);
+  //     }
+  // }
+  // console.log(tableArray);
+
+  /**
+   * SCROLLING
+   * 
+   * VISIBLE PORTION
+   * window object:
+   * reference - https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollBy
+   * 1.ScrollBy - method scrolls the document in the window by the given amount
+   *  Syntax:
+   *      window.scrollBy(x.coor,y-coor)
+   *      window.scrollBy(options)
+   * x-coord is the horizontal pixel value that you want to scroll by.
+      y-coord is the vertical pixel value that you want to scroll by.
+
+   *  Y -> - window.innerHeight (scroll Up) , window.innerHeight(scroll down)
+       
+   */
+
+  //scroll down
+  // await browser.execute(()=>{
+  //     window.scrollBy(0,window.innerHeight);
+  // })
+
+  // //scroll up
+  // await browser.execute(()=>{
+  //     window.scrollBy(0,-window.innerHeight);
+  // })
+
+  /**
+   * INVISIBLE PORTION
+   * window object:
+   * 1.ScrollTo
+   * Window.scrollTo() scrolls to a particular set of coordinates in the document.
+      Syntax:
+      scrollTo(x-coord, y-coord)
+      scrollTo(options)
+
+      x-coord is the pixel along the horizontal axis of the document that you want displayed in the upper left.
+y-coord is the pixel along the vertical axis of the document that you want displayed in the upper left.
+      Examples:
+            window.scrollTo(0, 1000);
+      Using options:
+
+        window.scrollTo({
+          top: 100,
+          left: 100,
+          behavior: "smooth",
+        });
+   *  Y -> document.body.scrollTop[scrollheight]
+   */
+  // await browser.pause(2000);
+  // await browser.execute(()=>{
+  //    window.scrollTo(0,document.body.scrollHeight);
+  // })
+
+  // await browser.pause(2000);
+  // await browser.execute(()=>{
+  //    window.scrollTo(0,document.body.scrollTop);
+  // })
+
+  //console.log(`>>>>>>>>> browser Obj ${JSON.stringify(browser)}`)
+
   await browser.debug();
 });
