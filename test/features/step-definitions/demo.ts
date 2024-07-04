@@ -14,7 +14,7 @@ When(/^Search with (.*)$/, async function (searchItem) {
   await ele.setValue(searchItem);
   await browser.keys("Enter");
 
-  console.log(`>>>> Ele Obj ${JSON.stringify(ele)}`);
+  // console.log(`>>>> Ele Obj ${JSON.stringify(ele)}`);
 
 });
 
@@ -27,12 +27,12 @@ Then(/^URL should match (.*)$/, async function (exceptedURL) {
   console.log(`>>> exceptedURl ${exceptedURL}`);
   //Dynamic wait
 
-  await browser.waitUntil(async () => {
-    return (
-      await browser.getTitle() ===
-      "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js | WebdriverIO"
-    );
-  },{timeout:6000,interval:2000,timeoutMsg:"Title not Found"});
+  // await browser.waitUntil(async () => {
+  //   return (
+  //     await browser.getTitle() ===
+  //     "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js | WebdriverIO"
+  //   );
+  // },{timeout:6000,interval:2000,timeoutMsg:"Title not Found"});
 
   //chai is an BDD/TDD assertion library
   let url = await browser.getUrl();

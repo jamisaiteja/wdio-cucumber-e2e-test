@@ -1,4 +1,7 @@
 import type { Options } from "@wdio/types";
+
+let headless =  process.env.HEADLESS
+console.log(`$headless key , ${headless}`)
 export const config: Options.Testrunner = {
   //
   // ====================
@@ -59,12 +62,31 @@ export const config: Options.Testrunner = {
   // Sauce Labs platform configurator - a great tool to configure your capabilities:
   // https://saucelabs.com/platform/platform-configurator
   //
+  /**
+   * Additional Chorme Options
+   * --headless
+   * --disable-dev-shm-usage
+   * --no-sandbox
+   * --window-size=1920,1000
+   * --disable-gpu
+   * --proxy-server (eg- https://domain)
+   * --binary {location}
+   * --auth-server-whitelist="_"
+   */
   capabilities: [
     {
       browserName: "chrome",
-      "goog:chromeOptions":{
+      "goog:chromeOptions": {
         // just google search --> "chormium command line options" - you can get there
-        args:["-disable-web-security"] // to avoid SSL certificate
+        // to avoid SSL certificate
+        args: headless.trim().toUpperCase() === "Y" ? [
+          "-disable-web-security",
+          "--headless",
+          "--disable-dev-shm-usage",
+          "--no-sandbox",
+          "--window-size=1920,1000",
+          "--disable-gpu",
+        ]: [],
       },
       timeouts: { implicit: 5000, pageLoad: 20000, script: 30000 },
     },
