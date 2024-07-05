@@ -1,7 +1,9 @@
 import { Then } from "@wdio/cucumber-framework";
 import {expect} from "chai";
+import logger from "../../helper/logger.ts";
 
 Then(/^Inventory page should list (.*) products$/,async function(numOfProdcuts){
+    console.log(`>>>> appid, ${this.appid}`)
     /**check the parameter is truthy */
     if(!numOfProdcuts){
         throw Error (`Invalid number provided: ${numOfProdcuts}`)
@@ -24,6 +26,7 @@ Then(/^Validate all products have valid price$/,async function(){
      * 2. convert to number
      * 3. Assert the prices
      */
+    logger.info(`${this.testid} : Checking the price...`)
     let priceList = await $$(`.inventory_item_price`);
 
     let productPriceList = [];

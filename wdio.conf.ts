@@ -1,7 +1,11 @@
 import type { Options } from "@wdio/types";
+import dotenv from "dotenv";
+dotenv.config();
 
-let headless =  process.env.HEADLESS
-console.log(`$headless key , ${headless}`)
+let headless = process.env.HEADLESS;
+//log level
+let debug = process.env.DEBUG;
+//console.log(`$headless key , ${headless}`)
 export const config: Options.Testrunner = {
   //
   // ====================
@@ -34,7 +38,7 @@ export const config: Options.Testrunner = {
   //
   specs: [
     // ToDo: define location for spec files here
-    `./test/features/**/*.feature`,
+    `${process.cwd()}/test/features/**/*.feature`,
   ],
   // Patterns to exclude.
   exclude: [
@@ -75,18 +79,22 @@ export const config: Options.Testrunner = {
    */
   capabilities: [
     {
+      maxInstances: 5,
       browserName: "chrome",
       "goog:chromeOptions": {
         // just google search --> "chormium command line options" - you can get there
         // to avoid SSL certificate
-        args: headless.trim().toUpperCase() === "Y" ? [
-          "-disable-web-security",
-          "--headless",
-          "--disable-dev-shm-usage",
-          "--no-sandbox",
-          "--window-size=1920,1000",
-          "--disable-gpu",
-        ]: [],
+        args:
+          headless.trim().toUpperCase() === "Y"
+            ? [
+                "-disable-web-security",
+                "--headless",
+                "--disable-dev-shm-usage",
+                "--no-sandbox",
+                "--window-size=1920,1000",
+                "--disable-gpu",
+              ]
+            : [],
       },
       timeouts: { implicit: 5000, pageLoad: 20000, script: 30000 },
     },
@@ -99,7 +107,7 @@ export const config: Options.Testrunner = {
   // Define all options that are relevant for the WebdriverIO instance here
   //
   // Level of logging verbosity: trace | debug | info | warn | error | silent
-  logLevel: "error",
+  logLevel: debug.trim().toUpperCase() === "Y" ? "info" : "error",
   //
   // Set specific log levels per logger
   // loggers:
@@ -244,8 +252,14 @@ export const config: Options.Testrunner = {
    * @param {Array.<String>} specs        List of spec file paths that are to be run
    * @param {object}         browser      instance of created browser/device session
    */
-  // before: function (capabilities, specs) {
-  // },
+  //before: function (capabilities, specs) {
+    //@ts-ignore
+    //browser.options["environment"] = config.environment
+    //@ts-ignore
+    //browser.options["sauseDemoURL"] = config.sauseDemoURL
+    // browser.options["reqresBaseURL"] = config.reqresBaseURL
+    // browser.options["nopeCommerceBaseURL"] = config.nopeCommerceBaseURL
+  //},
   /**
    * Runs before a WebdriverIO command gets executed.
    * @param {string} commandName hook command name
@@ -264,12 +278,22 @@ export const config: Options.Testrunner = {
   // },
   /**
    *
-   * Runs before a Cucumber Scenario.
+   * Runs before a1 Cucumber Scenario.
    * @param {ITestCaseHookParameter} world    world object containing information on pickle and test step
    * @param {object}                 context  Cucumber World object
    */
-  // beforeScenario: function (world, context) {
-  // },
+  beforeScenario: function (world, context) {
+    //console.log(`the wrold Object: ${JSON.stringify(world)}`);
+    let arr = world.pickle.name.split(/:/);
+    console.log(arr);
+    // @ts-ignore
+    if (arr.length > 0) browser.options.testid = arr[0];
+    // @ts-ignore
+    if (!browser.options.testid)
+      throw Error(
+        `Error getting testid for current scenario: ${world.pickle.name}`
+      );
+  },
   /**
    *
    * Runs before a Cucumber Step.
@@ -277,8 +301,12 @@ export const config: Options.Testrunner = {
    * @param {IPickle}            scenario scenario pickle
    * @param {object}             context  Cucumber World object
    */
-  // beforeStep: function (step, scenario, context) {
-  // },
+  beforeStep: function (step, scenario, context) {
+    console.log(`>>>>> context : ${JSON.stringify(context)}`)
+    //@ts-ignore
+      if(browser.options.testid) context.testid = browser.options.testid
+      
+  },
   /**
    *
    * Runs after a Cucumber Step.
@@ -290,8 +318,16 @@ export const config: Options.Testrunner = {
    * @param {number}             result.duration  duration of scenario in milliseconds
    * @param {object}             context          Cucumber World object
    */
-  // afterStep: function (step, scenario, result, context) {
-  // },
+  afterStep: async function (step, scenario, result, context) {
+    // console.log(`>>>>> step ${JSON.stringify(step)}`)
+    // console.log(`>>>>> scenario ${JSON.stringify(scenario)}`)
+    // console.log(`>>>>> result ${JSON.stringify(result)}`)
+    // console.log(`>>>>> context ${JSON.stringify(context)}`)
+    //Take Screenshot if failed
+    if(!result.passed){
+      await browser.takeScreenshot()
+    }
+  },
   /**
    *
    * Runs after a Cucumber Scenario.

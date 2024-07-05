@@ -1,6 +1,7 @@
 import { Given, When, Then } from "@wdio/cucumber-framework";
 import { expect } from "chai";
 
+
 Given(/^Google$/, function () {
   browser.url("https://www.google.com");
   browser.pause(7000);
